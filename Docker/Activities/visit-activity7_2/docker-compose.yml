@@ -1,0 +1,14 @@
+services:
+    #Redis Database
+    redis-server:
+        image: "redis"
+        volumes: 
+            - ./redis:/Database
+        command: ["redis-server","--protected-mode","no","--save","1 1"]
+    # Node application
+    node-app: 
+        restart: always
+        build: .
+        image: docker.io/agrawal26/visit-activity7_2:latest
+        ports:
+            - "8081:8081"
