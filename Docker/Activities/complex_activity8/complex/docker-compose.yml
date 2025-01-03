@@ -1,0 +1,44 @@
+services:
+    postgres:
+        image: docker.io/postgres
+        environment:
+            - POSTGRES_PASSWORD=postgres_password
+    redis:
+        image: docker.io/redis
+        command: ["redis-server", "--protected-mode", "no"]
+    api:
+        build: ./server
+        image: docker.io/agrawal26/complex-api
+        environment:
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+            - PGUSER=postgres
+            - PGHOST=postgres
+            - PGDATABASE=postgres
+            - PGPASSWORD=postgres_password
+            - PGPORT=5432
+  # Worker Service
+    worker:
+        build: 
+            context: ./worker
+        image: docker.io/agrawal26/complex-worker
+        environment:
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+  # React client
+    client:
+        build: ./client
+        image: docker.io/agrawal26/complex-client
+  # Nginx
+    nginx: 
+        depends_on:
+           - api
+           - client
+        restart: always
+        build: ./nginx
+        ports:
+            - "3050:80"
+
+           
+    
+       
